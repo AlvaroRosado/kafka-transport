@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Exoticca\KafkaMessenger\Transport\HeaderSerializer;
+namespace Exoticca\KafkaMessenger\Transport\Header;
 
 class HeaderIdentifier
 {

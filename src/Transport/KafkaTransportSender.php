@@ -6,8 +6,7 @@ namespace Exoticca\KafkaMessenger\Transport;
 
 use Exception;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
-use Exoticca\KafkaMessenger\Transport\HeaderSerializer\HeaderIdentifier;
-use Exoticca\KafkaMessenger\Transport\HeaderSerializer\HeaderSerializerTrait;
+use Exoticca\KafkaMessenger\Transport\Header\HeaderIdentifier;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaForceFlushStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifier;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaNoFlushStamp;
