@@ -1,5 +1,5 @@
 {
-  "name": "alvarorosado/test-kafka-transport",
+  "name": "alvarorosado/kafka-transport",
   "description": "A Symfony bundle for integrating Kafka with Messenger",
   "type": "symfony-bundle",
   "license": "MIT",
