@@ -24,7 +24,8 @@ final class KafkaTransportSender implements SenderInterface
         private KafkaConnection      $connection,
         private ?SerializerInterface $serializer = new PhpSerializer(),
         private ?SchemaRegistryManager $schemaRegistryManager = null,
-    ) {}
+    ) {
+    }
 
     public function send(Envelope $envelope): Envelope
     {
@@ -68,7 +69,7 @@ final class KafkaTransportSender implements SenderInterface
                 key: $key,
                 headers: $decodedEnvelope["headers"] ?? [],
                 forceFlush: $forceFlush,
-                beforeProduceConvertBody: fn(string $topic, string $body) => $this->encodeWithSchemaRegistry($topic, $body, $discriminatoryName)
+                beforeProduceConvertBody: fn (string $topic, string $body) => $this->encodeWithSchemaRegistry($topic, $body, $discriminatoryName)
             );
         } catch (Exception $e) {
             throw new TransportException($e->getMessage(), 0, $e);

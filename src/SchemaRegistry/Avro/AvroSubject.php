@@ -9,7 +9,9 @@ class AvroSubject
     private const SCHEMA_VALUE_REGISTRY_SUFFIX = '-value';
     private const SCHEMA_KEY_REGISTRY_SUFFIX = '-key';
 
-    private function __construct(private string $subject) {}
+    private function __construct(private string $subject)
+    {
+    }
 
     public function __toString(): string
     {

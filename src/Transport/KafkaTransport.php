@@ -13,7 +13,8 @@ final readonly class KafkaTransport implements TransportInterface, QueueReceiver
     public function __construct(
         private KafkaTransportSender $sender,
         private KafkaTransportReceiver $receiver
-    ) {}
+    ) {
+    }
 
     public function get(): iterable
     {

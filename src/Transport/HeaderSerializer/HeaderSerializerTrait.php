@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger\Transport\HeaderSerializer;
 
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaCustomHeadersStamp;
@@ -14,7 +13,6 @@ use Symfony\Component\Messenger\Stamp\StampInterface;
 
 trait HeaderSerializerTrait
 {
-
     /**
      * @param array $kafkaHeaders
      * @return StampInterface[]

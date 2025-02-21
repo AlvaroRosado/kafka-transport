@@ -9,7 +9,9 @@ use Symfony\Component\Messenger\Stamp\NonSendableStampInterface;
 
 final class KafkaMessageStamp implements NonSendableStampInterface
 {
-    public function __construct(private readonly RdKafkaMessage $message) {}
+    public function __construct(private readonly RdKafkaMessage $message)
+    {
+    }
 
     public function message(): RdKafkaMessage
     {

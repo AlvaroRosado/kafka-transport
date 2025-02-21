@@ -54,7 +54,8 @@ class AddFilterAndCallBackCompilerPassTest extends TestCase
     }
 }
 
-class MockCallbackProcessor implements CallbackProcessorInterface {
+class MockCallbackProcessor implements CallbackProcessorInterface
+{
     public function log(object $kafka, int $level, string $facility, string $message): void
     {
         // TODO: Implement log() method.
@@ -95,7 +96,8 @@ class MockCallbackProcessor implements CallbackProcessorInterface {
         // TODO: Implement deliveryReport() method.
     }
 }
-class MockRecordFilter implements RecordFilterStrategy {
+class MockRecordFilter implements RecordFilterStrategy
+{
     public function filter(string $transportName, string $groupId, Message $message): bool
     {
         // TODO: Implement filter() method.

@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Exoticca\KafkaMessenger\Transport\Filter;
+
 use RdKafka\Message;
 
 interface RecordFilterStrategy

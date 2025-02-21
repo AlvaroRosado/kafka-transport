@@ -17,8 +17,7 @@ final class KafkaProducerConfig
         int $pollTimeoutMs,
         int $flushTimeoutMs,
         bool $validateSchema,
-    )
-    {
+    ) {
         $this->config = $config;
         $this->topics = $topics;
         $this->pollTimeoutMs = $pollTimeoutMs;

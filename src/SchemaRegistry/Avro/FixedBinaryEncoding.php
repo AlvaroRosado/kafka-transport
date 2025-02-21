@@ -21,6 +21,7 @@ use Avro\Serialization\Message\BinaryEncoding\FixedEncoding;
 use Avro\Serialization\Message\BinaryEncoding\MapEncoding;
 use Avro\Serialization\Message\BinaryEncoding\PrimitiveEncoding;
 use Avro\Serialization\Message\BinaryEncoding\RecordEncoding;
+
 use function get_class;
 
 /**

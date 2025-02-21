@@ -6,4 +6,6 @@ namespace Exoticca\KafkaMessenger\Transport\Stamp;
 
 use Symfony\Component\Messenger\Stamp\NonSendableStampInterface;
 
-final class KafkaNoFlushStamp implements NonSendableStampInterface {}
+final class KafkaNoFlushStamp implements NonSendableStampInterface
+{
+}

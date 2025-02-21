@@ -13,7 +13,8 @@ class AvroSchema
         private Schema $schema,
         private int $schemaId,
         private int $version
-    ) {}
+    ) {
+    }
 
     public function getSchemaId(): int
     {

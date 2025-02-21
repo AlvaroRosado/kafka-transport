@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger\Transport\Config;
 
 use Symfony\Component\Messenger\Exception\LogicException;
 
-class KafkaConfigManager {
+class KafkaConfigManager
+{
     private const array DEFAULT_CONSUMER_OPTIONS = [
         'commit_async' => true,
         'consume_timeout_ms' => 500,

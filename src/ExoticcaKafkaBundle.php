@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger;
 
 use Exoticca\KafkaMessenger\DependencyInjection\Compiler\AddFilterAndCallBackCompilerPass;
@@ -25,10 +24,11 @@ use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
-class ExoticcaKafkaBundle extends AbstractBundle {
-
+class ExoticcaKafkaBundle extends AbstractBundle
+{
     protected string $extensionAlias = 'exoticca_kafka_messenger';
 
     public function configure(DefinitionConfigurator $definition): void

@@ -19,7 +19,8 @@ final class KafkaTransportReceiver implements ReceiverInterface
         private KafkaConnection      $connection,
         private ?SerializerInterface $serializer = new PhpSerializer(),
         private ?SchemaRegistryManager $schemaRegistryManager = null,
-    ) {}
+    ) {
+    }
 
     public function get(array $queues = []): iterable
     {

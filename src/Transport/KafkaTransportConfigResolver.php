@@ -2,7 +2,6 @@
 
 namespace Exoticca\KafkaMessenger\Transport;
 
-
 use Exoticca\KafkaMessenger\Transport\Config\KafkaConfig;
 use Exoticca\KafkaMessenger\Transport\Config\KafkaConfigInterface;
 use Exoticca\KafkaMessenger\Transport\Config\KafkaConfigManager;

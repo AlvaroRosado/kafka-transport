@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger\DependencyInjection\Compiler;
 
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
@@ -13,8 +12,8 @@ use Symfony\Component\DependencyInjection\Compiler\CompilerPassInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 
-class AddFilterAndCallBackCompilerPass implements CompilerPassInterface {
-
+class AddFilterAndCallBackCompilerPass implements CompilerPassInterface
+{
     public function process(ContainerBuilder $container): void
     {
         $callBackManager = $container->findDefinition(CallbackManager::class);

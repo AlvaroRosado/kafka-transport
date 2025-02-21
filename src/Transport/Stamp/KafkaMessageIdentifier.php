@@ -10,7 +10,9 @@ final class KafkaMessageIdentifier implements StampInterface
 {
     public const IDENTIFIER = 'identifier';
 
-    public function __construct(public string $identifier) {}
+    public function __construct(public string $identifier)
+    {
+    }
 
     public function __toString(): string
     {

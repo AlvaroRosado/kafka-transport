@@ -3,6 +3,7 @@
 declare(strict_types=1);
 
 namespace Exoticca\KafkaMessenger\Transport\Config;
+
 final class KafkaConsumerConfig
 {
     private array $config;
@@ -17,8 +18,7 @@ final class KafkaConsumerConfig
         int $consumeTimeout,
         bool $commitAsync,
         bool $validateSchema,
-    )
-    {
+    ) {
         $this->config = $config;
         $this->topics = $topics;
         $this->consumeTimeout = $consumeTimeout;

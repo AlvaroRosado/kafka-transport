@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger\SchemaRegistry;
 
 use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSchema;

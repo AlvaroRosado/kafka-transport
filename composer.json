@@ -44,6 +44,7 @@
   },
   "require-dev": {
     "dg/bypass-finals": "^1.9",
+    "friendsofphp/php-cs-fixer": "^3.69",
     "phpunit/phpunit": "^12.0"
   }
 }

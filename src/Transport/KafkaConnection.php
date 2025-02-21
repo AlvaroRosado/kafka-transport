@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger\Transport;
 
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
@@ -16,8 +15,8 @@ use RdKafka\Producer;
 use Symfony\Component\Console\SignalRegistry\SignalRegistry;
 use Symfony\Component\Messenger\Exception\TransportException;
 
-class KafkaConnection {
-
+class KafkaConnection
+{
     private bool $consumerSubscribed = false;
     private bool $consumerMustBeRunning = false;
     private ?KafkaConsumer $consumer;
@@ -39,8 +38,7 @@ class KafkaConnection {
 
     public function get(
         array $topicsToFilter,
-    ): ?iterable
-    {
+    ): ?iterable {
         $consumer = $this->getConsumer();
 
         if (!$this->consumerSubscribed) {
@@ -54,12 +52,11 @@ class KafkaConnection {
 
     private function doReceive(
         int $timeout,
-    ): iterable
-    {
+    ): iterable {
         $this->signalRegistry->register(SIGINT, fn () => $this->consumerMustBeRunning = false);
         $this->signalRegistry->register(SIGTERM, fn () => $this->consumerMustBeRunning = false);
 
-        while($this->consumerMustBeRunning) {
+        while ($this->consumerMustBeRunning) {
             $kafkaMessage = $this->getConsumer()->consume($timeout);
 
             if (null === $kafkaMessage) {
@@ -79,11 +76,13 @@ class KafkaConnection {
                         break;
                     }
                     yield $kafkaMessage;
+                    // no break
                 case RD_KAFKA_RESP_ERR__TIMED_OUT:
                 case RD_KAFKA_RESP_ERR__TRANSPORT:
                 case RD_KAFKA_RESP_ERR_UNKNOWN_TOPIC_OR_PART:
                 case RD_KAFKA_RESP_ERR__PARTITION_EOF:
                     yield null;
+                    // no break
                 default:
                     throw new \LogicException($kafkaMessage->errstr(), $kafkaMessage->err);
                     break;
@@ -115,8 +114,7 @@ class KafkaConnection {
         array    $headers = [],
         bool     $forceFlush = true,
         callable $beforeProduceConvertBody = null,
-    ): void
-    {
+    ): void {
         $producer = $this->getProducer();
 
         foreach ($this->kafkaContext->producer()->topics() as $topic) {
@@ -136,7 +134,7 @@ class KafkaConnection {
             $producer->poll($this->kafkaContext->producer()->flushTimeoutMs());
 
             if ($forceFlush) {
-            	$this->flush();
+                $this->flush();
             }
         }
     }
