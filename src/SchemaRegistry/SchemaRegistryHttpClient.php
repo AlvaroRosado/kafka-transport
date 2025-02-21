@@ -115,7 +115,7 @@ class SchemaRegistryHttpClient implements AsyncClient
         $raw = $response->getContent(false);
 
         try {
-            $json = json_decode($raw, true);
+            $json = \Safe\json_decode($raw, true);
             if (Error::isError($json)) {
                 throw Error::fromResponse($json);
             }

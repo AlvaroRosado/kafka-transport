@@ -11,3 +11,4 @@ composer.lock
 .DS_Store
 /results
 /.php-cs-fixer.cache
+/.phpunit.cache
