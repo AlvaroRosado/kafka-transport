@@ -150,12 +150,12 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
         $services->set(SchemaRegistryHttpClient::class)
             ->args([
-                new Reference(ParameterBagInterface::class),
+                $config['schema_registry']["base_uri"],
+                $config['schema_registry']["api_key"],
+                $config['schema_registry']["api_secret"],
                 new Reference(HttpClientInterface::class)
             ])
             ->tag('messenger.transport.kafka.exoticca.schema_registry');
-
-        $builder->setParameter('exoticca_kafka.schema_registry', $config['schema_registry']);
 
         $kafkaConfigValidator = new KafkaConfigManager();
         $kafkaConfigValidator->setupConsumerOptions($config, 'In exoticca_kafka_messenger.consumer configuration');

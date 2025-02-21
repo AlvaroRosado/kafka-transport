@@ -21,12 +21,13 @@ class SchemaRegistryHttpClient implements AsyncClient
     public const PATH_GET_SUBJECT_BY_SCHEMA_VERSION = '/subjects/%s/versions/%s';
     private HttpClientInterface $client;
 
-    public function __construct(private ParameterBagInterface $parameterBag, HttpClientInterface $httpClient)
+    public function __construct(
+        string $baseUri,
+        string $apiKey,
+        string $apiSecret,
+        HttpClientInterface $httpClient
+    )
     {
-        $baseUri = $this->parameterBag->get('app.schema_registry')['base_uri'];
-        $apiKey = $this->parameterBag->get('app.schema_registry')['api_key'];
-        $apiSecret = $this->parameterBag->get('app.schema_registry')['api_secret'];
-
         $this->client = $httpClient->withOptions(
             [
                 'base_uri' => $baseUri,

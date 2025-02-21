@@ -11,37 +11,34 @@ use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryHttpClient;
 use Exoticca\KafkaMessenger\Tests\ObjectMother\AvroSchemaMother;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBag;
 use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 #[CoversClass(SchemaRegistryHttpClient::class)]
 class SchemaRegistryHttpClientTest extends TestCase
 {
-    private SchemaRegistryHttpClient $client;
-    private ParameterBag $parameterBag;
+    private array $credentials;
 
     protected function setUp(): void
     {
-        $this->parameterBag = new ParameterBag([
-            'app.schema_registry' => [
-                'base_uri' => 'http://schema-registry.local',
-                'api_key' => 'test_key',
-                'api_secret' => 'test_secret',
-            ],
-        ]);
+        $this->credentials = [
+            'base_uri' => 'http://schema-registry.local',
+            'api_key' => 'test_key',
+            'api_secret' => 'test_secret',
+        ];
     }
 
     public function testGetRegisteredSchemaId(): void
     {
         $response = new MockResponse(json_encode(['id' => 100091]));
-        $this->client = new SchemaRegistryHttpClient($this->parameterBag, new MockHttpClient($response));
+        $client = $this->registryWithCustomResponse($response);
+
         $schemaId = 100091;
 
         $subject = 'public_revenue_rule_fct-value';
         $schema = '{}';
 
-        $id = $this->client->getRegisteredSchemaId($subject, $schema);
+        $id = $client->getRegisteredSchemaId($subject, $schema);
 
         $this->assertEquals($schemaId, $id);
     }
@@ -51,12 +48,12 @@ class SchemaRegistryHttpClientTest extends TestCase
         $schemaId = 20001;
         $responseBody = json_encode(['id' => $schemaId]);
         $response = new MockResponse($responseBody);
-        $this->client = new SchemaRegistryHttpClient($this->parameterBag, new MockHttpClient($response));
+        $client = $this->registryWithCustomResponse($response);
 
         $subject = 'new_subject';
         $schema = '{"type": "record", "name": "test"}';
 
-        $id = $this->client->registerSchema($subject, $schema);
+        $id = $client->registerSchema($subject, $schema);
 
         $this->assertEquals($schemaId, $id);
     }
@@ -67,9 +64,9 @@ class SchemaRegistryHttpClientTest extends TestCase
         $schema = '{"type": "record", "name": "test"}';
         $responseBody = json_encode(['schema' => $schema]);
         $response = new MockResponse($responseBody);
-        $this->client = new SchemaRegistryHttpClient($this->parameterBag, new MockHttpClient($response));
+        $client = $this->registryWithCustomResponse($response);
 
-        $retrievedSchema = $this->client->getSchema($schemaId);
+        $retrievedSchema = $client->getSchema($schemaId);
 
         $this->assertEquals($schema, $retrievedSchema);
     }
@@ -79,10 +76,10 @@ class SchemaRegistryHttpClientTest extends TestCase
         $response = json_decode(\Safe\file_get_contents(__DIR__.'/../../Fixtures/schema_union.json'), true);
         $response["schema"] = json_encode($response["schema"]);
         $response = new MockResponse(json_encode($response));
-        $this->client = new SchemaRegistryHttpClient($this->parameterBag, new MockHttpClient($response));
+        $client = $this->registryWithCustomResponse($response);
 
         $avroSubject = AvroSubject::ofValue('subject');
-        $avroSchema = $this->client->getSubjectSchema($avroSubject);
+        $avroSchema = $client->getSubjectSchema($avroSubject);
         $this->assertEquals($avroSchema, AvroSchemaMother::unionType());
     }
 
@@ -94,12 +91,12 @@ class SchemaRegistryHttpClientTest extends TestCase
         ]);
 
         $response = new MockResponse($responseBody);
-        $this->client = new SchemaRegistryHttpClient($this->parameterBag, new MockHttpClient($response));
+        $client = $this->registryWithCustomResponse($response);
 
         $subject = 'non_existent_subject';
         $schema = '{}';
 
-        $id = $this->client->getRegisteredSchemaId($subject, $schema);
+        $id = $client->getRegisteredSchemaId($subject, $schema);
         $this->assertNull($id);
     }
 
@@ -107,7 +104,16 @@ class SchemaRegistryHttpClientTest extends TestCase
     {
         $this->expectException(ClientError::class);
         $response = new MockResponse('invalid_json');
-        $this->client = new SchemaRegistryHttpClient($this->parameterBag, new MockHttpClient($response));
-        $this->client->getSchema(100091);
+        $client = $this->registryWithCustomResponse($response);
+        $client->getSchema(100091);
+    }
+
+    private function registryWithCustomResponse(MockResponse $response): SchemaRegistryHttpClient {
+        return new SchemaRegistryHttpClient(
+            'http://schema-registry.local',
+            'test_key',
+            'test_secret'
+            , new MockHttpClient($response)
+        );
     }
 }
