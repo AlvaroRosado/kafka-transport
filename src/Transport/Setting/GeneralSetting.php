@@ -1,0 +1,16 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Exoticca\KafkaMessenger\Transport\Setting;
+
+final readonly class GeneralSetting
+{
+    public function __construct(
+        public string          $host,
+        public string          $transportName,
+        public ProducerSetting $producer,
+        public ConsumerSetting $consumer,
+    ) {
+    }
+}

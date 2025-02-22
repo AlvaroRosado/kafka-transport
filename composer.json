@@ -21,6 +21,8 @@
     "symfony/http-client": "^6.0 || ^7.0",
     "symfony/http-kernel": "^6.0 || ^7.0",
     "symfony/messenger": "^6.0 || ^7.0",
+    "symfony/property-info": "^6.0 || ^7.0",
+    "symfony/serializer": "^6.0 || ^7.0",
     "zoltanka/bypass-readonly": "^0.0.4"
   },
   "autoload": {

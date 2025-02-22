@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Exoticca\KafkaMessenger\Transport;
 
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
-use Exoticca\KafkaMessenger\Transport\Config\KafkaConfig;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
-use LogicException;
+use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
+use Exoticca\KafkaMessenger\Transport\Setting\GeneralSetting;
 use RdKafka\Conf;
 use RdKafka\KafkaConsumer;
 use RdKafka\Message;
@@ -25,14 +25,11 @@ class KafkaConnection
     private SignalRegistry $signalRegistry;
 
     public function __construct(
-        private readonly CallbackManager $callbackManager,
+        private readonly CallbackManager     $callbackManager,
         private readonly RecordFilterManager $manager,
-        private readonly KafkaConfig     $kafkaContext,
+        private readonly GeneralSetting      $generalSetting,
     ) {
         $this->signalRegistry = new SignalRegistry();
-        if (!\extension_loaded('rdkafka')) {
-            throw new LogicException(sprintf('You cannot use the "%s" as the "rdkafka" extension is not installed.', __CLASS__));
-        }
     }
 
 
@@ -42,11 +39,12 @@ class KafkaConnection
         $consumer = $this->getConsumer();
 
         if (!$this->consumerSubscribed) {
-            $consumer->subscribe(!empty($topicsToFilter) ? $topicsToFilter : $this->kafkaContext->consumer()->topics());
+            $consumer->subscribe(!empty($topicsToFilter) ? $topicsToFilter : $this->generalSetting->consumer->topics);
         }
         $this->consumerMustBeRunning = true;
+
         yield from $this->doReceive(
-            timeout: $this->kafkaContext->consumer()->consumeTimeout() ?? 500
+            timeout: $this->generalSetting->consumer->consumeTimeout ?? 500
         );
     }
 
@@ -65,16 +63,27 @@ class KafkaConnection
 
             switch ($kafkaMessage->err) {
                 case \RD_KAFKA_RESP_ERR_NO_ERROR:
+
+                    $messageFoundInMapping = false;
+                    foreach ($this->generalSetting->consumer->routing as $name => $class) {
+                        if ($name === $kafkaMessage->headers[MessageSerializer::identifierHeaderKey()]) {
+                            $messageFoundInMapping = true;
+                            break;
+                        }
+                    }
+
                     $filterMessage = $this->manager->filter(
-                        transportName: $this->kafkaContext->transportName(),
-                        groupId: $this->kafkaContext->consumer()->config()['group.id'],
+                        transportName: $this->generalSetting->transportName,
+                        groupId: $this->generalSetting->consumer->config['group.id'],
                         message: $kafkaMessage,
                     );
 
-                    if ($filterMessage) {
+                    if ($filterMessage || !$messageFoundInMapping) {
                         $this->ack($kafkaMessage);
                         break;
                     }
+
+
                     yield $kafkaMessage;
                     // no break
                 case RD_KAFKA_RESP_ERR__TIMED_OUT:
@@ -95,7 +104,7 @@ class KafkaConnection
     {
         $consumer = $this->getConsumer();
 
-        if ($this->kafkaContext->consumer()->consumeTimeout()) {
+        if ($this->generalSetting->consumer->consumeTimeout) {
             $consumer->commitAsync($message);
         } else {
             $consumer->commit($message);
@@ -117,7 +126,7 @@ class KafkaConnection
     ): void {
         $producer = $this->getProducer();
 
-        foreach ($this->kafkaContext->producer()->topics() as $topic) {
+        foreach ($this->generalSetting->producer->topics as $topic) {
             if ($beforeProduceConvertBody) {
                 $body = $beforeProduceConvertBody($topic, $body);
             }
@@ -131,7 +140,7 @@ class KafkaConnection
                 $headers,
             );
 
-            $producer->poll($this->kafkaContext->producer()->flushTimeoutMs());
+            $producer->poll($this->generalSetting->producer->flushTimeoutMs);
 
             if ($forceFlush) {
                 $this->flush();
@@ -142,7 +151,7 @@ class KafkaConnection
     public function flush(): void
     {
         for ($flushRetries = 0; $flushRetries < 10; ++$flushRetries) {
-            $result = $this->getProducer()->flush($this->kafkaContext->producer()->flushTimeoutMs());
+            $result = $this->getProducer()->flush($this->generalSetting->producer->flushTimeoutMs);
 
             if (RD_KAFKA_RESP_ERR_NO_ERROR === $result) {
                 break;
@@ -156,18 +165,18 @@ class KafkaConnection
 
     private function getConsumer(): KafkaConsumer
     {
-        return $this->consumer ??= $this->createConsumer($this->kafkaContext->consumer()->config());
+        return $this->consumer ??= $this->createConsumer($this->generalSetting->consumer->config);
     }
 
     private function getProducer(): Producer
     {
-        return $this->producer ??= $this->createProducer($this->kafkaContext->producer()->config());
+        return $this->producer ??= $this->createProducer($this->generalSetting->producer->config);
     }
 
     private function getBaseConf(): Conf
     {
         $conf = new Conf();
-        $conf->set('metadata.broker.list', $this->kafkaContext->host());
+        $conf->set('metadata.broker.list', $this->generalSetting->host);
         $conf->setLogCb([$this->callbackManager, 'log']);
         $conf->setStatsCb([$this->callbackManager, 'stats']);
         return $conf;

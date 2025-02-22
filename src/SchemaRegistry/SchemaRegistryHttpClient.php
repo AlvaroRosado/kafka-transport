@@ -26,8 +26,7 @@ class SchemaRegistryHttpClient implements AsyncClient
         string $apiKey,
         string $apiSecret,
         HttpClientInterface $httpClient
-    )
-    {
+    ) {
         $this->client = $httpClient->withOptions(
             [
                 'base_uri' => $baseUri,

@@ -20,6 +20,11 @@ final class KafkaCustomHeadersStamp implements StampInterface
         return $this->headers;
     }
 
+    public function getHeaderKeys(): array
+    {
+        return array_keys($this->headers);
+    }
+
     public function withHeader(string $key, string $value): self
     {
         $new = clone $this;

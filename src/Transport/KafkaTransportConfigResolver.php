@@ -2,11 +2,10 @@
 
 namespace Exoticca\KafkaMessenger\Transport;
 
-use Exoticca\KafkaMessenger\Transport\Config\KafkaConfig;
-use Exoticca\KafkaMessenger\Transport\Config\KafkaConfigInterface;
-use Exoticca\KafkaMessenger\Transport\Config\KafkaConfigManager;
-use Exoticca\KafkaMessenger\Transport\Config\KafkaConsumerConfig;
-use Exoticca\KafkaMessenger\Transport\Config\KafkaProducerConfig;
+use Exoticca\KafkaMessenger\Transport\Setting\ConsumerSetting;
+use Exoticca\KafkaMessenger\Transport\Setting\GeneralSetting;
+use Exoticca\KafkaMessenger\Transport\Setting\ProducerSetting;
+use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
 use LogicException;
 
 final class KafkaTransportConfigResolver
@@ -21,7 +20,7 @@ final class KafkaTransportConfigResolver
         'serializer'
     ];
 
-    public function resolve(string $dsn, array $globalOptions, array $transportOptions): KafkaConfigInterface
+    public function resolve(string $dsn, array $globalOptions, array $transportOptions): GeneralSetting
     {
         if (false === $parsedUrl = parse_url($dsn)) {
             throw new \InvalidArgumentException(sprintf('The given Kafka DSN "%s" is invalid.', $dsn));
@@ -50,7 +49,7 @@ final class KafkaTransportConfigResolver
             throw new LogicException('At least one of "consumer" or "producer" options is required for the %s transport.'. $transportName);
         }
 
-        $configValidator = new KafkaConfigManager();
+        $configValidator = new SettingManager();
         $consumerOptions = $configValidator->setupConsumerOptions($options, sprintf(" given in the consumer option of transport %s", $transportName));
         $producerOptions = $configValidator->setupProducerOptions($options, sprintf(" given in the producer option of transport %s", $transportName));
 
@@ -78,7 +77,10 @@ final class KafkaTransportConfigResolver
             $producerOptions['validate_schema'] = $validateSchema;
         }
 
-        $consumerConfig = new KafkaConsumerConfig(
+        $consumerOptions['routing'] = array_column($consumerOptions['routing'], 'class', 'name');
+
+        $consumerConfig = new ConsumerSetting(
+            routing: $consumerOptions['routing'],
             config: $consumerOptions['config'],
             topics: $consumerOptions['topics'],
             consumeTimeout: $consumerOptions['consume_timeout_ms'],
@@ -86,7 +88,7 @@ final class KafkaTransportConfigResolver
             validateSchema: $consumerOptions['validate_schema'],
         );
 
-        $producerConfig = new KafkaProducerConfig(
+        $producerConfig = new ProducerSetting(
             config: $producerOptions['config'],
             topics: $producerOptions['topics'],
             pollTimeoutMs: $producerOptions['poll_timeout_ms'],
@@ -94,11 +96,11 @@ final class KafkaTransportConfigResolver
             validateSchema: $producerOptions['validate_schema'],
         );
 
-        return new KafkaConfig(
+        return new GeneralSetting(
             host: $parsedUrl["host"].":".$parsedUrl["port"],
             transportName: $options["transport_name"],
-            producerConfig: $producerConfig,
-            consumerConfig: $consumerConfig,
+            producer: $producerConfig,
+            consumer: $consumerConfig,
         );
     }
 }

@@ -10,6 +10,7 @@ use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportFactoryInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
+use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 
 final readonly class KafkaTransportFactory implements TransportFactoryInterface
 {
@@ -37,22 +38,27 @@ final readonly class KafkaTransportFactory implements TransportFactoryInterface
     {
         $options = $this->configuration->resolve($dsn, $this->globalConfig, $options);
 
+        $serializer = new MessageSerializer(
+            staticMethodIdentifier: 'getReferenceName',
+            routingMap: $options->consumer->routing,
+        );
+
         $connection = new KafkaConnection(
             callbackManager: $this->callbackManager,
             manager: $this->recordFilterManager,
-            kafkaContext: $options,
+            generalSetting: $options,
         );
 
         return new KafkaTransport(
             sender: new KafkaTransportSender(
                 connection: $connection,
                 serializer: $serializer,
-                schemaRegistryManager: $options->producer()->validateSchema() ? $this->schemaRegistryManager : null,
+                schemaRegistryManager: $options->producer->validateSchema ? $this->schemaRegistryManager : null,
             ),
             receiver: new KafkaTransportReceiver(
                 connection: $connection,
                 serializer: $serializer,
-                schemaRegistryManager: $options->consumer()->validateSchema() ? $this->schemaRegistryManager : null,
+                schemaRegistryManager: $options->consumer->validateSchema ? $this->schemaRegistryManager : null,
             )
         );
     }

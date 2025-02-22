@@ -2,12 +2,12 @@
 
 declare(strict_types=1);
 
-namespace Exoticca\KafkaMessenger\Transport\Config;
+namespace Exoticca\KafkaMessenger\Transport\Setting;
 
 /**
  * @see https://github.com/confluentinc/librdkafka/blob/master/CONFIGURATION.md
  */
-final class KafkaConfigList
+final class KafkaOptionList
 {
     /**
      * @return array<string, string>

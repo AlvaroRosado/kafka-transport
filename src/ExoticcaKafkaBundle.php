@@ -11,16 +11,15 @@ use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistrySerializer;
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
 use Exoticca\KafkaMessenger\Transport\Callback\PsrLoggingProcessor;
-use Exoticca\KafkaMessenger\Transport\Config\KafkaConfigManager;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterStrategy;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportFactory;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportConfigResolver;
+use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
@@ -48,7 +47,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
                         ->end()
                         ->integerNode('consume_timeout_ms')
                             ->defaultNull()
-                            ->info('Consumer timeout in milliseconds')
+                            ->info('ConsumerSetting timeout in milliseconds')
                         ->end()
                         ->arrayNode('config')
                             ->info('Kafka consumer configuration')
@@ -157,7 +156,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
             ])
             ->tag('messenger.transport.kafka.exoticca.schema_registry');
 
-        $kafkaConfigValidator = new KafkaConfigManager();
+        $kafkaConfigValidator = new SettingManager();
         $kafkaConfigValidator->setupConsumerOptions($config, 'In exoticca_kafka_messenger.consumer configuration');
         $kafkaConfigValidator->setupProducerOptions($config, 'In exoticca_kafka_messenger.producer configuration');
 
