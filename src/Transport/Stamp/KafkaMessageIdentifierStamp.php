@@ -6,10 +6,8 @@ namespace Exoticca\KafkaMessenger\Transport\Stamp;
 
 use Symfony\Component\Messenger\Stamp\StampInterface;
 
-final class KafkaMessageIdentifier implements StampInterface
+final class KafkaMessageIdentifierStamp implements StampInterface
 {
-    public const IDENTIFIER = 'identifier';
-
     public function __construct(public string $identifier)
     {
     }

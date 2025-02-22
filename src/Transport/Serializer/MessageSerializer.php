@@ -4,7 +4,7 @@ namespace Exoticca\KafkaMessenger\Transport\Serializer;
 
 use Exception;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaCustomHeadersStamp;
-use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifier;
+use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifierStamp;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\NonSendableStampInterface;
@@ -41,10 +41,10 @@ class MessageSerializer implements SerializerInterface
     public function decode(array $encodedEnvelope): Envelope
     {
         $stamps = $this->decodeHeaders($encodedEnvelope);
-        $identifier = (string)($stamps[KafkaMessageIdentifier::class] ?? null);
+        $identifier = (string)($stamps[KafkaMessageIdentifierStamp::class] ?? null);
 
         if (!$identifier || !isset($this->routingMap[$identifier])) {
-            throw new Exception('Message not found in routing map or KafkaMessageIdentifier missing %s', $identifier);
+            throw new Exception('Message not found in routing map or KafkaMessageIdentifierStamp missing %s', $identifier);
         }
 
         $body = $this->serializer->deserialize($encodedEnvelope['body'], $this->routingMap[$identifier], 'json');
@@ -57,7 +57,7 @@ class MessageSerializer implements SerializerInterface
         $message = $envelope->getMessage();
         $referenceName = $this->getReferenceName($message);
 
-        $envelope = $envelope->with(new KafkaMessageIdentifier($referenceName));
+        $envelope = $envelope->with(new KafkaMessageIdentifierStamp($referenceName));
 
         return [
             'body' => $this->serializer->serialize($message, 'json'),
@@ -91,7 +91,7 @@ class MessageSerializer implements SerializerInterface
                 continue;
             }
             if (str_starts_with($name, self::identifierHeaderKey())) {
-                $stamps[KafkaMessageIdentifier::class] = new KafkaMessageIdentifier($value);
+                $stamps[KafkaMessageIdentifierStamp::class] = new KafkaMessageIdentifierStamp($value);
                 continue;
             }
             if (str_starts_with($name, self::customAttributesHeaderKey())) {
@@ -133,7 +133,7 @@ class MessageSerializer implements SerializerInterface
                     $headers[self::customAttributesHeaderKey()] = json_encode(array_keys($stamp->getHeaders()));
                     continue;
                 }
-                if ($stamp instanceof KafkaMessageIdentifier) {
+                if ($stamp instanceof KafkaMessageIdentifierStamp) {
                     $headers[self::identifierHeaderKey()] = $stamp->identifier;
                     continue;
                 }

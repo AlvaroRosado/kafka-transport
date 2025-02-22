@@ -122,10 +122,17 @@ class KafkaConnection
         string   $key = null,
         array    $headers = [],
         bool     $forceFlush = true,
+        string   $identifier = null,
         callable $beforeProduceConvertBody = null,
     ): void {
         $producer = $this->getProducer();
+        $topicFromRouting = $this->generalSetting->producer->routing[$identifier] ?? null;
+
         foreach ($this->generalSetting->producer->topics as $topic) {
+            if ($topicFromRouting && $topic != $topicFromRouting) {
+                continue;
+            }
+
             if ($beforeProduceConvertBody) {
                 $body = $beforeProduceConvertBody($topic);
             }
@@ -140,10 +147,10 @@ class KafkaConnection
             );
 
             $producer->poll($this->generalSetting->producer->flushTimeoutMs);
+        }
 
-            if ($forceFlush) {
-                $this->flush();
-            }
+        if ($forceFlush) {
+            $this->flush();
         }
     }
 

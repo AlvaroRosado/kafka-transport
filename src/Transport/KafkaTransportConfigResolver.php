@@ -75,6 +75,7 @@ final class KafkaTransportConfigResolver
         }
 
         $consumerOptions['routing'] = array_column($consumerOptions['routing'], 'class', 'name');
+        $producerOptions['routing'] = array_column($producerOptions['routing'], 'topic', 'name');
 
         $consumerConfig = new ConsumerSetting(
             routing: $consumerOptions['routing'],
@@ -86,6 +87,7 @@ final class KafkaTransportConfigResolver
         );
 
         $producerConfig = new ProducerSetting(
+            routing: $producerOptions['routing'],
             config: $producerOptions['config'],
             topics: $producerOptions['topics'],
             pollTimeoutMs: $producerOptions['poll_timeout_ms'],

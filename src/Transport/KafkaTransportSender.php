@@ -8,6 +8,7 @@ use Exception;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaForceFlushStamp;
+use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifierStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageKeyStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaNoFlushStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageStamp;
@@ -58,7 +59,7 @@ final class KafkaTransportSender implements SenderInterface
             $forceFlush = true;
         }
 
-        $discriminatoryName = $decodedEnvelope["headers"][MessageSerializer::identifierHeaderKey()] ?? throw new Exception('Discriminatory name not found in envelope');
+        $identifier = $decodedEnvelope["headers"][MessageSerializer::identifierHeaderKey()] ?? throw new Exception('Discriminatory name not found in envelope');
 
         try {
             $this->connection->produce(
@@ -68,7 +69,8 @@ final class KafkaTransportSender implements SenderInterface
                 key: $key,
                 headers: $decodedEnvelope["headers"] ?? [],
                 forceFlush: $forceFlush,
-                beforeProduceConvertBody: fn (string $topic) => $this->encodeWithSchemaRegistry($topic, $decodedEnvelope["body"], $discriminatoryName)
+                identifier: $identifier,
+                beforeProduceConvertBody: fn (string $topic) => $this->encodeWithSchemaRegistry($topic, $decodedEnvelope["body"], $identifier)
             );
         } catch (Exception $e) {
             throw new TransportException($e->getMessage(), 0, $e);

@@ -11,6 +11,7 @@ final readonly class ProducerSetting
      * @param array<string> $topics
      */
     public function __construct(
+        public array $routing = [],
         public array $config = [],
         public array $topics = [],
         public int $pollTimeoutMs = 0,
