@@ -8,7 +8,7 @@ use Exception;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaForceFlushStamp;
-use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifier;
+use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageKeyStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaNoFlushStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageStamp;
 use Symfony\Component\Messenger\Envelope;
@@ -39,9 +39,13 @@ final class KafkaTransportSender implements SenderInterface
         $messageFlags = \RD_KAFKA_CONF_OK;
 
         if ($messageStamp = $envelope->last(KafkaMessageStamp::class)) {
-            $key = $messageStamp->key;
             $partition = $messageStamp->partition;
             $messageFlags = $messageStamp->messageFlags;
+            $key = $messageStamp->key;
+        }
+
+        if ($keyStamp = $envelope->last(KafkaMessageKeyStamp::class)) {
+            $key = $keyStamp->key;
         }
 
         $forceFlush = true;
