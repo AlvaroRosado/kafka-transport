@@ -64,21 +64,27 @@ class KafkaConnection
             switch ($kafkaMessage->err) {
                 case \RD_KAFKA_RESP_ERR_NO_ERROR:
 
-                    $messageFoundInMapping = false;
+                    $forceAckByRoutingMap = false;
+
+                    $messageFoundInRouting = false;
                     foreach ($this->generalSetting->consumer->routing as $name => $class) {
                         if ($name === $kafkaMessage->headers[MessageSerializer::identifierHeaderKey()]) {
-                            $messageFoundInMapping = true;
+                            $messageFoundInRouting = true;
                             break;
                         }
                     }
 
-                    $filterMessage = $this->manager->filter(
+                    if (!$messageFoundInRouting) {
+                        $forceAckByRoutingMap = true;
+                    }
+
+                    $forceAckByRecordStrategy = $this->manager->filter(
                         transportName: $this->generalSetting->transportName,
                         groupId: $this->generalSetting->consumer->config['group.id'],
                         message: $kafkaMessage,
                     );
 
-                    if ($filterMessage || !$messageFoundInMapping) {
+                    if ($forceAckByRecordStrategy || $forceAckByRoutingMap) {
                         $this->ack($kafkaMessage);
                         break;
                     }
