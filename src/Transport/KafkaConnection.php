@@ -125,10 +125,9 @@ class KafkaConnection
         callable $beforeProduceConvertBody = null,
     ): void {
         $producer = $this->getProducer();
-
         foreach ($this->generalSetting->producer->topics as $topic) {
             if ($beforeProduceConvertBody) {
-                $body = $beforeProduceConvertBody($topic, $body);
+                $body = $beforeProduceConvertBody($topic);
             }
 
             $topic = $producer->newTopic($topic);

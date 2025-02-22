@@ -64,7 +64,7 @@ final class KafkaTransportSender implements SenderInterface
                 key: $key,
                 headers: $decodedEnvelope["headers"] ?? [],
                 forceFlush: $forceFlush,
-                beforeProduceConvertBody: fn (string $topic, string $body) => $this->encodeWithSchemaRegistry($topic, $body, $discriminatoryName)
+                beforeProduceConvertBody: fn (string $topic) => $this->encodeWithSchemaRegistry($topic, $decodedEnvelope["body"], $discriminatoryName)
             );
         } catch (Exception $e) {
             throw new TransportException($e->getMessage(), 0, $e);

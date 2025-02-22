@@ -69,11 +69,8 @@ final class KafkaTransportConfigResolver
 
         $validateSchema = $options['validate_schema'] ?? null;
 
-        if (is_null($consumerOptions['validate_schema'])) {
+        if (!is_null($validateSchema)) {
             $consumerOptions['validate_schema'] = $validateSchema;
-        }
-
-        if (is_null($producerOptions['validate_schema'])) {
             $producerOptions['validate_schema'] = $validateSchema;
         }
 
