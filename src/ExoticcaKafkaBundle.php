@@ -10,7 +10,8 @@ use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryHttpClient;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistrySerializer;
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
-use Exoticca\KafkaMessenger\Transport\Callback\PsrLoggingProcessor;
+use Exoticca\KafkaMessenger\Transport\Callback\CallbackProcessorInterface;
+use Exoticca\KafkaMessenger\Transport\Callback\RebalanceProcessor;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterStrategy;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportFactory;
@@ -114,7 +115,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
         $services->set(KafkaTransportSettingResolver::class);
 
-        $services->set(PsrLoggingProcessor::class)
+        $services->set(RebalanceProcessor::class)
             ->args([new Reference(LoggerInterface::class)])
             ->tag('messenger.transport.kafka.exoticca.callback_processor');
 
@@ -171,11 +172,20 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
         $kafkaTransportDefinition = $builder->getDefinition(KafkaTransportFactory::class);
         $kafkaTransportDefinition->replaceArgument(4, $config);
-    }
 
-    public function build(ContainerBuilder $container): void
-    {
-        parent::build($container);
-        $container->addCompilerPass(new AddFilterAndCallBackCompilerPass());
+        /**
+         * Register all callback processors and record filters
+         */
+        $callBackManager = $builder->findDefinition(CallbackManager::class);
+        $recordFilterManager = $builder->findDefinition(RecordFilterManager::class);
+
+        foreach ($builder->getDefinitions() as $serviceId => $definition) {
+            if (is_subclass_of($definition->getClass(), CallbackProcessorInterface::class)) {
+                $callBackManager->addMethodCall('addCallbackProcessor', [new Reference($serviceId)]);
+            }
+            if (is_subclass_of($definition->getClass(), RecordFilterStrategy::class)) {
+                $recordFilterManager->addMethodCall('addFilter', [new Reference($serviceId)]);
+            }
+        }
     }
 }
