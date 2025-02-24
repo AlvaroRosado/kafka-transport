@@ -8,7 +8,6 @@ use Exception;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaForceFlushStamp;
-use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifierStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageKeyStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaNoFlushStamp;
 use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageStamp;
@@ -36,8 +35,8 @@ final class KafkaTransportSender implements SenderInterface
         }
 
         $key = null;
-        $partition = \RD_KAFKA_PARTITION_UA;
-        $messageFlags = \RD_KAFKA_CONF_OK;
+        $partition = null;
+        $messageFlags = null;
 
         if ($messageStamp = $envelope->last(KafkaMessageStamp::class)) {
             $partition = $messageStamp->partition;
@@ -60,6 +59,14 @@ final class KafkaTransportSender implements SenderInterface
         }
 
         $identifier = $decodedEnvelope["headers"][MessageSerializer::identifierHeaderKey()] ?? throw new Exception('Discriminatory name not found in envelope');
+
+        if (!$partition) {
+            $partition = \RD_KAFKA_PARTITION_UA;
+        }
+
+        if (!$messageFlags) {
+            $messageFlags = \RD_KAFKA_CONF_OK;
+        }
 
         try {
             $this->connection->produce(
