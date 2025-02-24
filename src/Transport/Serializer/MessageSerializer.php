@@ -128,7 +128,7 @@ class MessageSerializer implements SerializerInterface
     private function encodeHeaders(Envelope $envelope): array
     {
         $headers = [];
-        foreach ($envelope->withoutAll(NonSendableStampInterface::class)->all() as $class => $stamps) {
+        foreach ($envelope->withoutStampsOfType(NonSendableStampInterface::class)->all() as $class => $stamps) {
             foreach ($stamps as $stamp) {
                 if ($stamp instanceof KafkaCustomHeadersStamp) {
                     $headers += $stamp->getHeaders();
