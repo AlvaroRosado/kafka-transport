@@ -125,7 +125,7 @@ class KafkaConnection
         int      $partition,
         int      $messageFlags,
         string   $body,
-        string   $key = null,
+        ?string   $key = null,
         array    $headers = [],
         bool     $forceFlush = true,
         string   $identifier = null,
