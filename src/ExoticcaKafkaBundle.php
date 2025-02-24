@@ -8,22 +8,17 @@ use Exoticca\KafkaMessenger\SchemaRegistry\AvroSchemaRegistrySerializer;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryHttpClient;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistrySerializer;
-use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
-use Exoticca\KafkaMessenger\Transport\Callback\CallbackProcessorInterface;
-use Exoticca\KafkaMessenger\Transport\Callback\PsrLoggingProcessor;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterStrategy;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportFactory;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportSettingResolver;
 use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
-use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
-
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
 class ExoticcaKafkaBundle extends AbstractBundle
@@ -113,35 +108,13 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
         $services->set(KafkaTransportSettingResolver::class);
 
-        $services->set(PsrLoggingProcessor::class)
-            ->args([new Reference(LoggerInterface::class)])
-            ->tag('messenger.transport.kafka.exoticca.callback_processor');
-
-        $services->set(RecordFilterStrategy::class)->tag('messenger.transport.kafka.exoticca.filter_strategy');
-        $services->set(CallbackProcessorInterface::class)->tag('messenger.transport.kafka.exoticca.callback_processor');
-
         $services->set(AvroSchemaRegistrySerializer::class)
             ->alias(SchemaRegistrySerializer::class, AvroSchemaRegistrySerializer::class);
-
-
-        $services
-            ->set(RecordFilterManager::class)
-            ->args(
-                [!tagged_iterator('messenger.transport.kafka.exoticca.filter_strategy')]
-            );
-
-        $services
-            ->set(CallbackManager::class)
-            ->args(
-                [!tagged_iterator('messenger.transport.kafka.exoticca.callback_processor')]
-            );
 
         $services
             ->set(KafkaTransportFactory::class)
             ->args([
                 new Reference(KafkaTransportSettingResolver::class),
-                new Reference(CallbackManager::class),
-                new Reference(RecordFilterManager::class),
                 new Reference(SchemaRegistryManager::class),
                 null
             ])
@@ -170,22 +143,6 @@ class ExoticcaKafkaBundle extends AbstractBundle
         $kafkaConfigValidator->setupProducerOptions($config, 'In exoticca_kafka_messenger.producer configuration');
 
         $kafkaTransportDefinition = $builder->getDefinition(KafkaTransportFactory::class);
-        $kafkaTransportDefinition->replaceArgument(4, $config);
-
-        /**
-         * Register all callback processors and record filters
-         */
-        $callBackManager = $builder->findDefinition(CallbackManager::class);
-        $recordFilterManager = $builder->findDefinition(RecordFilterManager::class);
-
-        foreach ($builder->getDefinitions() as $serviceId => $definition) {
-            if (is_subclass_of($definition->getClass(), CallbackProcessorInterface::class)) {
-                $callBackManager->addMethodCall('addCallbackProcessor', [new Reference($serviceId)]);
-            }
-            if (is_subclass_of($definition->getClass(), RecordFilterStrategy::class)) {
-                $recordFilterManager->addMethodCall('addFilter', [new Reference($serviceId)]);
-            }
-        }
-
+        $kafkaTransportDefinition->replaceArgument(2, $config);
     }
 }

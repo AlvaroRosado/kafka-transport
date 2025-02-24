@@ -4,8 +4,7 @@ declare(strict_types=1);
 
 namespace Exoticca\KafkaMessenger\Transport;
 
-use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
-use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
+use Exception;
 use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 use Exoticca\KafkaMessenger\Transport\Setting\GeneralSetting;
 use RdKafka\Conf;
@@ -25,8 +24,6 @@ class KafkaConnection
     private SignalRegistry $signalRegistry;
 
     public function __construct(
-        private readonly CallbackManager     $callbackManager,
-        private readonly RecordFilterManager $manager,
         private readonly GeneralSetting      $generalSetting,
     ) {
         $this->signalRegistry = new SignalRegistry();
@@ -78,13 +75,7 @@ class KafkaConnection
                         $forceAckByRoutingMap = true;
                     }
 
-                    $forceAckByRecordStrategy = $this->manager->filter(
-                        transportName: $this->generalSetting->transportName,
-                        groupId: $this->generalSetting->consumer->config['group.id'],
-                        message: $kafkaMessage,
-                    );
-
-                    if ($forceAckByRecordStrategy || $forceAckByRoutingMap) {
+                    if ($forceAckByRoutingMap) {
                         $this->ack($kafkaMessage);
                         break;
                     }
@@ -189,18 +180,28 @@ class KafkaConnection
     {
         $conf = new Conf();
         $conf->set('metadata.broker.list', $this->generalSetting->host);
-        $conf->setLogCb([$this->callbackManager, 'log']);
-        $conf->setStatsCb([$this->callbackManager, 'stats']);
         return $conf;
     }
 
     private function createConsumer(array $kafkaConfig): KafkaConsumer
     {
         $conf = $this->getBaseConf();
-        $conf->setErrorCb([$this->callbackManager, 'consumerError']);
-        $conf->setRebalanceCb([$this->callbackManager, 'rebalance']);
-        $conf->setConsumeCb([$this->callbackManager, 'consume']);
-        $conf->setOffsetCommitCb([$this->callbackManager, 'offsetCommit']);
+        $conf->setRebalanceCb(function (KafkaConsumer $kafka, $err, ?array $partitions = null) {
+            switch ($err) {
+                case RD_KAFKA_RESP_ERR__ASSIGN_PARTITIONS:
+                    $kafka->assign($partitions);
+
+                    break;
+
+                case RD_KAFKA_RESP_ERR__REVOKE_PARTITIONS:
+                    $kafka->assign(null);
+
+                    break;
+
+                default:
+                    throw new Exception($err);
+            }
+        });
 
         foreach ($kafkaConfig as $key => $value) {
             $conf->set($key, $value);
@@ -215,8 +216,6 @@ class KafkaConnection
     private function createProducer(array $kafkaConfig): Producer
     {
         $conf = $this->getBaseConf();
-        $conf->setErrorCb([$this->callbackManager, 'producerError']);
-        $conf->setDrMsgCb([$this->callbackManager, 'deliveryReport']);
 
         foreach ($kafkaConfig as $key => $value) {
             $conf->set($key, $value);

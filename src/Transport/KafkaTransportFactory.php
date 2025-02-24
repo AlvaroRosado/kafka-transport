@@ -5,8 +5,6 @@ declare(strict_types=1);
 namespace Exoticca\KafkaMessenger\Transport;
 
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
-use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
-use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\Messenger\Transport\TransportFactoryInterface;
 use Symfony\Component\Messenger\Transport\TransportInterface;
@@ -15,22 +13,16 @@ use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 final readonly class KafkaTransportFactory implements TransportFactoryInterface
 {
     private KafkaTransportSettingResolver $configuration;
-    private CallbackManager $callbackManager;
     private ?array $globalConfig;
-    private RecordFilterManager $recordFilterManager;
     private ?SchemaRegistryManager $schemaRegistryManager;
 
     public function __construct(
         KafkaTransportSettingResolver $configuration,
-        CallbackManager               $callbackManager,
-        RecordFilterManager           $recordFilterManager,
         ?SchemaRegistryManager        $schemaRegistryManager = null,
         ?array                        $globalConfig = null,
     ) {
         $this->configuration = $configuration;
-        $this->callbackManager = $callbackManager;
         $this->globalConfig = $globalConfig;
-        $this->recordFilterManager = $recordFilterManager;
         $this->schemaRegistryManager = $schemaRegistryManager;
     }
 
@@ -44,8 +36,6 @@ final readonly class KafkaTransportFactory implements TransportFactoryInterface
         );
 
         $connection = new KafkaConnection(
-            callbackManager: $this->callbackManager,
-            manager: $this->recordFilterManager,
             generalSetting: $options,
         );
 
