@@ -17,6 +17,7 @@ final class CallbackManager
     private array $callbackProcessors;
     public function __construct(
     ) {
+        $this->callbackProcessors = [];
     }
 
     public function log(object $kafka, int $level, string $facility, string $message): void
