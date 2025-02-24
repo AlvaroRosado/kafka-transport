@@ -9,7 +9,6 @@ use Avro\Serde;
 use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSchema;
 use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSubject;
 use Safe\Exceptions\JsonException;
-use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 class SchemaRegistryHttpClient implements AsyncClient

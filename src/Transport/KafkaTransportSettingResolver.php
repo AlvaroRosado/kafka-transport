@@ -50,6 +50,10 @@ final class KafkaTransportSettingResolver
             throw new LogicException('At least one of "consumer" or "producer" options is required for the %s transport.'. $transportName);
         }
 
+        if (!isset($options['identifier']['staticMethod']) || !\is_string($options['identifier']['staticMethod'])) {
+            throw new LogicException(sprintf('The "staticMethodIdentifier" option type must be string, "%s" %s', \gettype($options['identifier']['staticMethod']), $transportName));
+        }
+
         $configValidator = new SettingManager();
         $consumerOptions = $configValidator->setupConsumerOptions($options, sprintf(" given in the consumer option of transport %s", $transportName));
         $producerOptions = $configValidator->setupProducerOptions($options, sprintf(" given in the producer option of transport %s", $transportName));
@@ -73,10 +77,6 @@ final class KafkaTransportSettingResolver
         if (!is_null($validateSchema)) {
             $consumerOptions['validate_schema'] = $validateSchema;
             $producerOptions['validate_schema'] = $validateSchema;
-        }
-
-        if ($options["identifier"]["staticMethod"] == "") {
-            throw new LogicException(sprintf('The "staticMethod" option is required for the %s transport.', $transportName));
         }
 
         $consumerOptions['routing'] = array_column($consumerOptions['routing'], 'class', 'name');
@@ -103,7 +103,7 @@ final class KafkaTransportSettingResolver
         return new GeneralSetting(
             host: $parsedUrl["host"].":".$parsedUrl["port"],
             transportName: $options["transport_name"],
-            staticMethodIdentifier: $consumerConfig['staticMethod'],
+            staticMethodIdentifier: $options['identifier']['staticMethod'],
             producer: $producerConfig,
             consumer: $consumerConfig,
         );

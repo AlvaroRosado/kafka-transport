@@ -59,10 +59,6 @@ class SettingManager
             $configOptions,
         );
 
-        if (!\is_string($options['staticMethodIdentifier'])) {
-            throw new LogicException(sprintf('The "staticMethodIdentifier" option type must be string, "%s" %s', \gettype($options['staticMethodIdentifier']), $contextErrorMessage));
-        }
-
         if (!\is_bool($options['commit_async'])) {
             throw new LogicException(sprintf('The "commit_async" option type must be boolean, "%s" %s', \gettype($options['commit_async']), $contextErrorMessage));
         }
@@ -121,10 +117,6 @@ class SettingManager
             self::DEFAULT_PRODUCER_OPTIONS,
             $configOptions,
         );
-
-        if (!\is_string($options['staticMethodIdentifier'])) {
-            throw new LogicException(sprintf('The "staticMethodIdentifier" option type must be string, "%s" %s', \gettype($options['staticMethodIdentifier']), $contextErrorMessage));
-        }
 
         if (!\is_int($options['poll_timeout_ms'])) {
             throw new LogicException(sprintf('The "poll_timeout_ms" option type must be integer, "%s" %s', \gettype($options['poll_timeout_ms']), $contextErrorMessage));

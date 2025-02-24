@@ -16,7 +16,6 @@ use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterStrategy;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportFactory;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportSettingResolver;
 use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
-use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
@@ -24,6 +23,7 @@ use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigura
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
 
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
 class ExoticcaKafkaBundle extends AbstractBundle
@@ -35,10 +35,12 @@ class ExoticcaKafkaBundle extends AbstractBundle
         $definition->rootNode()
             ->children()
                 ->arrayNode('identifier')->addDefaultsIfNotSet()
+                    ->info('Schema registry configuration')
                     ->children()
-                        ->stringNode('staticMethod')
-                            ->info('Static method identifier for events')
+                        ->scalarNode('staticMethod')
                             ->isRequired()
+                            ->info('Base URI of the Schema Registry')
+                        ->end()
                     ->end()
                 ->end()
                 ->arrayNode('consumer')->addDefaultsIfNotSet()
@@ -159,7 +161,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
                 $config['schema_registry']["base_uri"],
                 $config['schema_registry']["api_key"],
                 $config['schema_registry']["api_secret"],
-                new Reference(ClientInterface::class)
+                new Reference(HttpClientInterface::class)
             ])
             ->tag('messenger.transport.kafka.exoticca.schema_registry');
 
