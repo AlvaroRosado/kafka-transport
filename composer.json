@@ -2,6 +2,7 @@
   "name": "alvarorosado/kafka-transport",
   "description": "A Symfony bundle for integrating Kafka with Messenger",
   "type": "symfony-bundle",
+  "keywords": ["kafka", "symfony", "messenger", "transport", "queue", "bundle"],
   "license": "MIT",
   "authors": [
     {
@@ -29,6 +30,9 @@
     "psr-4": {
       "Exoticca\\KafkaMessenger\\Tests\\": "tests/"
     }
+  },
+  "suggest": {
+    "ext-rdkafka": "^6.0; Needed to support Kafka connectivity"
   },
   "config": {
     "sort-packages": true,
