@@ -14,6 +14,7 @@ use RdKafka\TopicPartition;
  */
 final class CallbackManager
 {
+    /** @var $callbackProcessors CallBackProcessorInterface[] */
     private array $callbackProcessors;
     public function __construct(
     ) {
