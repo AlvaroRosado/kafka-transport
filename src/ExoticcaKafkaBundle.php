@@ -107,21 +107,6 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
     public function loadExtension(array $config, ContainerConfigurator $container, ContainerBuilder $builder): void
     {
-        /**
-         * Register all callback processors and record filters
-         */
-        $callBackManager = $builder->findDefinition(CallbackManager::class);
-        $recordFilterManager = $builder->findDefinition(RecordFilterManager::class);
-
-        foreach ($builder->getDefinitions() as $serviceId => $definition) {
-            if (is_subclass_of($definition->getClass(), CallbackProcessorInterface::class)) {
-                $callBackManager->addMethodCall('addCallbackProcessor', [new Reference($serviceId)]);
-            }
-            if (is_subclass_of($definition->getClass(), RecordFilterStrategy::class)) {
-                $recordFilterManager->addMethodCall('addFilter', [new Reference($serviceId)]);
-            }
-        }
-
         $services = $container->services();
 
         $services->set(KafkaTransportSettingResolver::class);
@@ -180,6 +165,21 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
         $kafkaTransportDefinition = $builder->getDefinition(KafkaTransportFactory::class);
         $kafkaTransportDefinition->replaceArgument(4, $config);
+
+        /**
+         * Register all callback processors and record filters
+         */
+        $callBackManager = $builder->findDefinition(CallbackManager::class);
+        $recordFilterManager = $builder->findDefinition(RecordFilterManager::class);
+
+        foreach ($builder->getDefinitions() as $serviceId => $definition) {
+            if (is_subclass_of($definition->getClass(), CallbackProcessorInterface::class)) {
+                $callBackManager->addMethodCall('addCallbackProcessor', [new Reference($serviceId)]);
+            }
+            if (is_subclass_of($definition->getClass(), RecordFilterStrategy::class)) {
+                $recordFilterManager->addMethodCall('addFilter', [new Reference($serviceId)]);
+            }
+        }
 
     }
 }
