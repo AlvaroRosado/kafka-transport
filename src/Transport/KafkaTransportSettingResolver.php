@@ -8,9 +8,10 @@ use Exoticca\KafkaMessenger\Transport\Setting\ProducerSetting;
 use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
 use LogicException;
 
-final class KafkaTransportConfigResolver
+final class KafkaTransportSettingResolver
 {
     private const array AVAILABLE_OPTIONS = [
+        'identifier',
         'consumer',
         'producer',
         'topics',
@@ -74,6 +75,10 @@ final class KafkaTransportConfigResolver
             $producerOptions['validate_schema'] = $validateSchema;
         }
 
+        if ($options["identifier"]["staticMethod"] == "") {
+            throw new LogicException(sprintf('The "staticMethod" option is required for the %s transport.', $transportName));
+        }
+
         $consumerOptions['routing'] = array_column($consumerOptions['routing'], 'class', 'name');
         $producerOptions['routing'] = array_column($producerOptions['routing'], 'topic', 'name');
 
@@ -98,6 +103,7 @@ final class KafkaTransportConfigResolver
         return new GeneralSetting(
             host: $parsedUrl["host"].":".$parsedUrl["port"],
             transportName: $options["transport_name"],
+            staticMethodIdentifier: $consumerConfig['staticMethod'],
             producer: $producerConfig,
             consumer: $consumerConfig,
         );

@@ -14,18 +14,18 @@ use Exoticca\KafkaMessenger\Transport\Serializer\MessageSerializer;
 
 final readonly class KafkaTransportFactory implements TransportFactoryInterface
 {
-    private KafkaTransportConfigResolver $configuration;
+    private KafkaTransportSettingResolver $configuration;
     private CallbackManager $callbackManager;
     private ?array $globalConfig;
     private RecordFilterManager $recordFilterManager;
     private ?SchemaRegistryManager $schemaRegistryManager;
 
     public function __construct(
-        KafkaTransportConfigResolver $configuration,
-        CallbackManager              $callbackManager,
-        RecordFilterManager          $recordFilterManager,
-        ?SchemaRegistryManager       $schemaRegistryManager = null,
-        ?array                       $globalConfig = null,
+        KafkaTransportSettingResolver $configuration,
+        CallbackManager               $callbackManager,
+        RecordFilterManager           $recordFilterManager,
+        ?SchemaRegistryManager        $schemaRegistryManager = null,
+        ?array                        $globalConfig = null,
     ) {
         $this->configuration = $configuration;
         $this->callbackManager = $callbackManager;
@@ -39,7 +39,7 @@ final readonly class KafkaTransportFactory implements TransportFactoryInterface
         $options = $this->configuration->resolve($dsn, $this->globalConfig, $options);
 
         $serializer = new MessageSerializer(
-            staticMethodIdentifier: 'getReferenceName',
+            staticMethodIdentifier: $options->staticMethodIdentifier,
             routingMap: $options->consumer->routing,
         );
 

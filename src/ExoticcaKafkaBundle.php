@@ -14,15 +14,15 @@ use Exoticca\KafkaMessenger\Transport\Callback\PsrLoggingProcessor;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterStrategy;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportFactory;
-use Exoticca\KafkaMessenger\Transport\KafkaTransportConfigResolver;
+use Exoticca\KafkaMessenger\Transport\KafkaTransportSettingResolver;
 use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
+use Psr\Http\Client\ClientInterface;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\AbstractBundle;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 use function Symfony\Component\DependencyInjection\Loader\Configurator\tagged_iterator;
 
@@ -34,6 +34,13 @@ class ExoticcaKafkaBundle extends AbstractBundle
     {
         $definition->rootNode()
             ->children()
+                ->arrayNode('identifier')->addDefaultsIfNotSet()
+                    ->children()
+                        ->stringNode('staticMethod')
+                            ->info('Static method identifier for events')
+                            ->isRequired()
+                    ->end()
+                ->end()
                 ->arrayNode('consumer')->addDefaultsIfNotSet()
                     ->info('Default configuration for Kafka consumers')
                     ->children()
@@ -103,7 +110,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
 
         $services = $container->services();
 
-        $services->set(KafkaTransportConfigResolver::class);
+        $services->set(KafkaTransportSettingResolver::class);
 
         $services->set(PsrLoggingProcessor::class)
             ->args([new Reference(LoggerInterface::class)])
@@ -130,7 +137,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
         $services
             ->set(KafkaTransportFactory::class)
             ->args([
-                new Reference(KafkaTransportConfigResolver::class),
+                new Reference(KafkaTransportSettingResolver::class),
                 new Reference(CallbackManager::class),
                 new Reference(RecordFilterManager::class),
                 new Reference(SchemaRegistryManager::class),
@@ -152,7 +159,7 @@ class ExoticcaKafkaBundle extends AbstractBundle
                 $config['schema_registry']["base_uri"],
                 $config['schema_registry']["api_key"],
                 $config['schema_registry']["api_secret"],
-                new Reference(HttpClientInterface::class)
+                new Reference(ClientInterface::class)
             ])
             ->tag('messenger.transport.kafka.exoticca.schema_registry');
 
