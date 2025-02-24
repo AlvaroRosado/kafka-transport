@@ -10,11 +10,13 @@ use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistrySerializer;
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackManager;
 use Exoticca\KafkaMessenger\Transport\Callback\CallbackProcessorInterface;
+use Exoticca\KafkaMessenger\Transport\Callback\PsrLoggingProcessor;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterManager;
 use Exoticca\KafkaMessenger\Transport\Filter\RecordFilterStrategy;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportFactory;
 use Exoticca\KafkaMessenger\Transport\KafkaTransportSettingResolver;
 use Exoticca\KafkaMessenger\Transport\Setting\SettingManager;
+use Psr\Log\LoggerInterface;
 use Symfony\Component\Config\Definition\Configurator\DefinitionConfigurator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\Configurator\ContainerConfigurator;
@@ -110,6 +112,10 @@ class ExoticcaKafkaBundle extends AbstractBundle
         $services = $container->services();
 
         $services->set(KafkaTransportSettingResolver::class);
+
+        $services->set(PsrLoggingProcessor::class)
+            ->args([new Reference(LoggerInterface::class)])
+            ->tag('messenger.transport.kafka.exoticca.callback_processor');
 
         $services->set(RecordFilterStrategy::class)->tag('messenger.transport.kafka.exoticca.filter_strategy');
         $services->set(CallbackProcessorInterface::class)->tag('messenger.transport.kafka.exoticca.callback_processor');
