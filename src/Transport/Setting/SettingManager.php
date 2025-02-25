@@ -41,7 +41,7 @@ class SettingManager
     {
         $configOptions = $configOptions["consumer"];
 
-        if (0 === \count($configOptions)) {
+        if (is_null($configOptions) || 0 === \count($configOptions)) {
             return self::DEFAULT_CONSUMER_OPTIONS;
         }
 
@@ -100,7 +100,7 @@ class SettingManager
     {
         $configOptions = $configOptions["producer"];
 
-        if (0 === \count($configOptions)) {
+        if (is_null($configOptions) || 0 === \count($configOptions)) {
             return self::DEFAULT_PRODUCER_OPTIONS;
         }
 
