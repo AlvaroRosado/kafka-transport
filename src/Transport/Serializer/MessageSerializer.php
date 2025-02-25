@@ -10,6 +10,7 @@ use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifierStamp;
 use Symfony\Component\Messenger\Envelope;
 use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\NonSendableStampInterface;
+use Symfony\Component\Messenger\Stamp\SerializedMessageStamp;
 use Symfony\Component\Messenger\Transport\Serialization\SerializerInterface;
 use Symfony\Component\PropertyInfo\Extractor\PhpDocExtractor;
 use Symfony\Component\PropertyInfo\Extractor\ReflectionExtractor;
@@ -61,8 +62,14 @@ class MessageSerializer implements SerializerInterface
 
         $envelope = $envelope->with(new KafkaMessageIdentifierStamp($referenceName));
 
+        $serializedMessageStamp = $envelope->last(SerializedMessageStamp::class);
+
+        $body = $serializedMessageStamp
+            ? $serializedMessageStamp->getSerializedMessage()
+            : $this->serializer->serialize($message, 'json');
+
         return [
-            'body' => $this->serializer->serialize($message, 'json'),
+            'body' => $body,
             'headers' => $this->encodeHeaders($envelope),
         ];
     }
