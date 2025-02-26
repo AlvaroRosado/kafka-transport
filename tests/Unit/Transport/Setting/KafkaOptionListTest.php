@@ -27,12 +27,10 @@ class KafkaOptionListTest extends TestCase
 
         $this->assertNotEmpty($consumerOptions);
 
-        // Check for some essential consumer options
         $this->assertArrayHasKey('group.id', $consumerOptions);
         $this->assertArrayHasKey('auto.offset.reset', $consumerOptions);
         $this->assertArrayHasKey('enable.auto.commit', $consumerOptions);
 
-        // Consumer options should include global options
         $this->assertArrayHasKey('client.id', $consumerOptions);
         $this->assertArrayHasKey('bootstrap.servers', $consumerOptions);
     }
@@ -43,12 +41,10 @@ class KafkaOptionListTest extends TestCase
 
         $this->assertNotEmpty($producerOptions);
 
-        // Check for some essential producer options
         $this->assertArrayHasKey('acks', $producerOptions);
         $this->assertArrayHasKey('compression.type', $producerOptions);
         $this->assertArrayHasKey('batch.size', $producerOptions);
 
-        // Producer options should include global options
         $this->assertArrayHasKey('client.id', $producerOptions);
         $this->assertArrayHasKey('bootstrap.servers', $producerOptions);
     }
@@ -58,12 +54,10 @@ class KafkaOptionListTest extends TestCase
         $globalOptions = KafkaOptionList::global();
         $consumerOptions = KafkaOptionList::consumer();
 
-        // All global options should be in consumer options
         foreach (array_keys($globalOptions) as $key) {
             $this->assertArrayHasKey($key, $consumerOptions);
         }
 
-        // Consumer options should have more elements than global options
         $this->assertGreaterThan(count($globalOptions), count($consumerOptions));
     }
 
@@ -72,12 +66,10 @@ class KafkaOptionListTest extends TestCase
         $globalOptions = KafkaOptionList::global();
         $producerOptions = KafkaOptionList::producer();
 
-        // All global options should be in producer options
         foreach (array_keys($globalOptions) as $key) {
             $this->assertArrayHasKey($key, $producerOptions);
         }
 
-        // Producer options should have more elements than global options
         $this->assertGreaterThan(count($globalOptions), count($producerOptions));
     }
 }

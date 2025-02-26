@@ -108,7 +108,8 @@ class SettingManager
     {
         if (!\is_bool($options['commit_async'])) {
             throw new \InvalidArgumentException(
-                sprintf('The "commit_async" option type must be boolean, "%s" %s',
+                sprintf(
+                    'The "commit_async" option type must be boolean, "%s" %s',
                     gettype($options['commit_async']),
                     $contextErrorMessage
                 )
@@ -117,7 +118,8 @@ class SettingManager
 
         if (!\is_int($options['consume_timeout_ms'])) {
             throw new \InvalidArgumentException(
-                sprintf('The "consume_timeout_ms" option type must be integer, "%s" %s.',
+                sprintf(
+                    'The "consume_timeout_ms" option type must be integer, "%s" %s.',
                     gettype($options['consume_timeout_ms']),
                     $contextErrorMessage
                 )
@@ -126,7 +128,8 @@ class SettingManager
 
         if (!\is_array($options['topics'])) {
             throw new \InvalidArgumentException(
-                sprintf('The "topics" option type must be array, "%s" %s.',
+                sprintf(
+                    'The "topics" option type must be array, "%s" %s.',
                     gettype($options['topics']),
                     $contextErrorMessage
                 )
@@ -140,7 +143,8 @@ class SettingManager
     {
         if (!\is_int($options['poll_timeout_ms'])) {
             throw new \InvalidArgumentException(
-                sprintf('The "poll_timeout_ms" option type must be integer, "%s" %s',
+                sprintf(
+                    'The "poll_timeout_ms" option type must be integer, "%s" %s',
                     gettype($options['poll_timeout_ms']),
                     $contextErrorMessage
                 )
@@ -149,7 +153,8 @@ class SettingManager
 
         if (!\is_int($options['flush_timeout_ms'])) {
             throw new \InvalidArgumentException(
-                sprintf('The "flush_timeout_ms" option type must be integer, "%s" %s.',
+                sprintf(
+                    'The "flush_timeout_ms" option type must be integer, "%s" %s.',
                     gettype($options['flush_timeout_ms']),
                     $contextErrorMessage
                 )
@@ -158,7 +163,8 @@ class SettingManager
 
         if (!\is_array($options['topics'])) {
             throw new \InvalidArgumentException(
-                sprintf('The "topics" option type must be array, "%s" %s.',
+                sprintf(
+                    'The "topics" option type must be array, "%s" %s.',
                     gettype($options['topics']),
                     $contextErrorMessage
                 )
@@ -177,7 +183,8 @@ class SettingManager
 
         if (!\is_array($routing)) {
             throw new \InvalidArgumentException(
-                sprintf('The "routing" option type must be array, "%s" %s.',
+                sprintf(
+                    'The "routing" option type must be array, "%s" %s.',
                     gettype($routing),
                     $contextErrorMessage
                 )
@@ -190,7 +197,8 @@ class SettingManager
                 !\is_string($route[$targetKey])
             ) {
                 throw new \InvalidArgumentException(
-                    sprintf('Each "routing" entry must contain "%s" and "%s" %s.',
+                    sprintf(
+                        'Each "routing" entry must contain "%s" and "%s" %s.',
                         $nameKey,
                         $targetKey,
                         $contextErrorMessage
@@ -200,7 +208,8 @@ class SettingManager
 
             if ($targetKey === 'class' && !class_exists($route[$targetKey])) {
                 throw new \InvalidArgumentException(
-                    sprintf('The class "%s" specified in "routing" does not exist %s.',
+                    sprintf(
+                        'The class "%s" specified in "routing" does not exist %s.',
                         $route[$targetKey],
                         $contextErrorMessage
                     )
@@ -216,7 +225,8 @@ class SettingManager
 
         if (!empty($missingConfig)) {
             throw new \InvalidArgumentException(
-                sprintf('The config(s) "%s" are required %s.',
+                sprintf(
+                    'The config(s) "%s" are required %s.',
                     implode('", "', $missingConfig),
                     $contextErrorMessage
                 )
@@ -231,7 +241,8 @@ class SettingManager
 
         if (!empty($missingConfig)) {
             throw new \InvalidArgumentException(
-                sprintf('The config(s) "%s" are required for the %s.',
+                sprintf(
+                    'The config(s) "%s" are required for the %s.',
                     implode('", "', $missingConfig),
                     $contextErrorMessage
                 )
@@ -250,7 +261,8 @@ class SettingManager
 
             if (!\is_string($value)) {
                 throw new \InvalidArgumentException(
-                    sprintf('Kafka config value "%s" must be a string, %s, %s',
+                    sprintf(
+                        'Kafka config value "%s" must be a string, %s, %s',
                         $key,
                         get_debug_type($value),
                         $contextErrorMessage

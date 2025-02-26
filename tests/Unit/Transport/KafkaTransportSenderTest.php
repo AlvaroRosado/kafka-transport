@@ -159,7 +159,7 @@ final class KafkaTransportSenderTest extends TestCase
                 'encoded_body',
                 null,
                 $encodedEnvelope['headers'],
-                true,  // forceFlush is true because ForceFlushStamp overrides NoFlushStamp
+                true,
                 'message_type',
                 $this->isCallable()
             );

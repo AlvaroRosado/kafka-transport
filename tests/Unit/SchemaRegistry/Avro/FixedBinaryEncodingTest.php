@@ -2,22 +2,22 @@
 
 declare(strict_types=1);
 
-namespace Exoticca\KafkaMessenger\Tests\SchemaRegistry\Avro;
+namespace Exoticca\KafkaMessenger\Tests\Unit\SchemaRegistry\Avro;
 
-use Avro\Model\Schema\Fixed;
-use Avro\Model\Schema\Name;
-use Avro\Model\Schema\Record;
-use Avro\Model\Schema\Primitive;
 use Avro\Model\Schema\Array_;
-use Avro\Model\Schema\Map;
 use Avro\Model\Schema\Enum;
+use Avro\Model\Schema\Fixed;
+use Avro\Model\Schema\Map;
+use Avro\Model\Schema\Name;
 use Avro\Model\Schema\NamespacedName;
-use Avro\Serialization\Message\BinaryEncoding\PrimitiveEncoding;
-use Avro\Serialization\Message\BinaryEncoding\FixedEncoding;
-use Avro\Serialization\Message\BinaryEncoding\RecordEncoding;
-use Avro\Serialization\Message\BinaryEncoding\EnumEncoding;
+use Avro\Model\Schema\Primitive;
+use Avro\Model\Schema\Record;
 use Avro\Serialization\Message\BinaryEncoding\ArrayEncoding;
+use Avro\Serialization\Message\BinaryEncoding\EnumEncoding;
+use Avro\Serialization\Message\BinaryEncoding\FixedEncoding;
 use Avro\Serialization\Message\BinaryEncoding\MapEncoding;
+use Avro\Serialization\Message\BinaryEncoding\PrimitiveEncoding;
+use Avro\Serialization\Message\BinaryEncoding\RecordEncoding;
 use Avro\Serialization\Message\BinaryEncoding\StringByteReader;
 use Exoticca\KafkaMessenger\SchemaRegistry\Avro\FixedBinaryEncoding;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -26,7 +26,7 @@ use PHPUnit\Framework\TestCase;
 #[CoversClass(FixedBinaryEncoding::class)]
 class FixedBinaryEncodingTest extends TestCase
 {
-    public function testEncodePrimitive(): void
+    public function test_encoding_primitive(): void
     {
         $schema = Primitive::fromString(Primitive::TYPE_STRING);
         $value = 'test';
@@ -36,7 +36,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame(PrimitiveEncoding::encode($schema, $value), $encoded);
     }
 
-    public function testEncodeFixed(): void
+    public function test_encode_fixed(): void
     {
         $schema = Fixed::named(NamespacedName::fromValue('test.Fixed'), 4);
         $value = 'test';
@@ -46,7 +46,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame(FixedEncoding::encode($schema, $value), $encoded);
     }
 
-    public function testEncodeRecord(): void
+    public function test_encode_record(): void
     {
         $schema = Record::named(NamespacedName::fromValue('test.Record'));
         $value = [];
@@ -56,7 +56,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame(RecordEncoding::encode($schema, $value), $encoded);
     }
 
-    public function testEncodeEnum(): void
+    public function test_encode_enum(): void
     {
         $schema = Enum::named(NamespacedName::fromValue('test.Enum'), [Name::fromValue('A'), Name::fromValue('B')]);
         $value = 'A';
@@ -66,7 +66,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame(EnumEncoding::encode($schema, $value), $encoded);
     }
 
-    public function testEncodeArray(): void
+    public function test_encode_array(): void
     {
         $schema = Array_::of(Primitive::fromString(Primitive::TYPE_INT));
         $value = [1, 2, 3];
@@ -76,7 +76,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame(ArrayEncoding::encode($schema, $value), $encoded);
     }
 
-    public function testEncodeMap(): void
+    public function test_encode_map(): void
     {
         $schema = Map::to(Primitive::fromString(Primitive::TYPE_STRING));
         $value = ['key1' => 'value1', 'key2' => 'value2'];
@@ -86,7 +86,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame(MapEncoding::encode($schema, $value), $encoded);
     }
 
-    public function testDecodePrimitive(): void
+    public function test_decode_primitive(): void
     {
         $schema = Primitive::fromString(Primitive::TYPE_STRING);
         $reader = new StringByteReader(PrimitiveEncoding::encode($schema, 'test'));
@@ -96,7 +96,7 @@ class FixedBinaryEncodingTest extends TestCase
         $this->assertSame('test', $decoded);
     }
 
-    public function testDecodeFixed(): void
+    public function test_decode_fixed(): void
     {
         $schema = Fixed::named(NamespacedName::fromValue('test.Fixed'), 4);
         $reader = new StringByteReader(FixedEncoding::encode($schema, 'test'));

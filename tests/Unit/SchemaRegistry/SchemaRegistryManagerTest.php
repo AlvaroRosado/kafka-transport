@@ -12,7 +12,6 @@ use Exoticca\KafkaMessenger\Tests\ObjectMother\RdKafkaMessageMother;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
-use Exoticca\KafkaMessenger\Tests\ObjectMother\RdKafka;
 
 #[CoversClass(SchemaRegistryManager::class)]
 #[CoversClass(AvroSubject::class)]
@@ -29,7 +28,7 @@ class SchemaRegistryManagerTest extends TestCase
         $this->manager = new SchemaRegistryManager($this->serializer, $this->httpClient);
     }
 
-    public function testDecode(): void
+    public function test_decode(): void
     {
         $this->serializer->expects(
             $this->once()
@@ -42,7 +41,7 @@ class SchemaRegistryManagerTest extends TestCase
         $this->manager->decode(RdKafkaMessageMother::valid());
     }
 
-    public function testEncode(): void
+    public function test_encode(): void
     {
         $this->serializer->expects(
             $this->once()

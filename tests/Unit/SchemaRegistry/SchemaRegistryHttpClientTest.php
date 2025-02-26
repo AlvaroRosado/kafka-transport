@@ -31,7 +31,7 @@ class SchemaRegistryHttpClientTest extends TestCase
         ];
     }
 
-    public function testGetRegisteredSchemaId(): void
+    public function test_get_registered_schema_id(): void
     {
         $response = new MockResponse(json_encode(['id' => 100091]));
         $client = $this->registryWithCustomResponse($response);
@@ -46,7 +46,7 @@ class SchemaRegistryHttpClientTest extends TestCase
         $this->assertEquals($schemaId, $id);
     }
 
-    public function testRegisterSchema(): void
+    public function test_register_schema(): void
     {
         $schemaId = 20001;
         $responseBody = json_encode(['id' => $schemaId]);
@@ -61,7 +61,7 @@ class SchemaRegistryHttpClientTest extends TestCase
         $this->assertEquals($schemaId, $id);
     }
 
-    public function testGetSchema(): void
+    public function test_get_schema(): void
     {
         $schemaId = 100091;
         $schema = '{"type": "record", "name": "test"}';
@@ -74,7 +74,7 @@ class SchemaRegistryHttpClientTest extends TestCase
         $this->assertEquals($schema, $retrievedSchema);
     }
 
-    public function testGetSubjectSchema(): void
+    public function test_get_subject_schema(): void
     {
         $response = json_decode(\Safe\file_get_contents(__DIR__.'/../../Fixtures/schema_union.json'), true);
         $response["schema"] = json_encode($response["schema"]);
@@ -86,7 +86,7 @@ class SchemaRegistryHttpClientTest extends TestCase
         $this->assertEquals($avroSchema, AvroSchemaMother::unionType());
     }
 
-    public function testGetRegisteredSchemaIdWithNotFound(): void
+    public function test_get_registered_schema_id_with_not_found(): void
     {
         $responseBody = json_encode([
             'error_code' => Error::SUBJECT_NOT_FOUND,
@@ -103,7 +103,7 @@ class SchemaRegistryHttpClientTest extends TestCase
         $this->assertNull($id);
     }
 
-    public function testJsonRequestWithInvalidJsonResponse(): void
+    public function test_json_request_with_invalid_json_response(): void
     {
         $this->expectException(ClientError::class);
         $response = new MockResponse('invalid_json');

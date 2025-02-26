@@ -266,7 +266,6 @@ class SettingManagerTest extends TestCase
 
     public function test_handles_valid_consumer_routing_correctly(): void
     {
-        // Create a real class for testing
         eval('namespace Exoticca\TestNamespace; class TestClass {}');
 
         $config = [
@@ -318,8 +317,8 @@ class SettingManagerTest extends TestCase
             'consumer' => [
                 'config' => [
                     'group.id' => 'test-group',
-                    'auto.offset.reset' => 'latest',      // Valid consumer option
-                    'security.protocol' => 'ssl',         // Valid global option
+                    'auto.offset.reset' => 'latest',
+                    'security.protocol' => 'ssl',
                 ]
             ]
         ];
@@ -336,8 +335,8 @@ class SettingManagerTest extends TestCase
         $config = [
             'producer' => [
                 'config' => [
-                    'acks' => 'all',                  // Valid producer option
-                    'client.id' => 'test-producer',   // Valid global option
+                    'acks' => 'all',
+                    'client.id' => 'test-producer',
                 ]
             ]
         ];

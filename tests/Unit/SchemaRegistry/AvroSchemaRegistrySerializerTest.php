@@ -28,7 +28,7 @@ class AvroSchemaRegistrySerializerTest extends TestCase
         $this->serializer = new AvroSchemaRegistrySerializer();
     }
 
-    public function testEncodeDecodeClusterCreated(): void
+    public function test_encode_decode_cluster_created(): void
     {
         $schema = AvroSchemaMother::unionType();
         $message = json_decode('
@@ -50,7 +50,7 @@ class AvroSchemaRegistrySerializerTest extends TestCase
     }
 
     #[Test]
-    public function testEncodeDecodeSkusFoundForCluster(): void
+    public function test_encode_decode_sku_found_for_cluster(): void
     {
         $schema = AvroSchemaMother::unionType();
         $message = json_decode('
@@ -87,7 +87,7 @@ class AvroSchemaRegistrySerializerTest extends TestCase
         $this->assertEquals($message, $data);
     }
 
-    public function testEncodeDecodeNoSkusFoundForCluster(): void
+    public function test_encode_decode_no_sku_found_for_cluster(): void
     {
         $schema = AvroSchemaMother::unionType();
         $message = json_decode('
@@ -102,7 +102,7 @@ class AvroSchemaRegistrySerializerTest extends TestCase
         $this->assertEquals($message, $data);
     }
 
-    public function testEncodeDecodeWithNullAdjustedMargin(): void
+    public function test_encode_decode_with_null_margin(): void
     {
         $schema = AvroSchemaMother::unionType();
         $message = json_decode('
