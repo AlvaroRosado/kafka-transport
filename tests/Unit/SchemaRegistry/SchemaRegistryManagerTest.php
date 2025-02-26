@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Exoticca\KafkaMessenger\Tests\Unit\SchemaRegistry;
 
+use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSubject;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryHttpClient;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryManager;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistrySerializer;
@@ -14,6 +15,7 @@ use PHPUnit\Framework\TestCase;
 use Exoticca\KafkaMessenger\Tests\ObjectMother\RdKafka;
 
 #[CoversClass(SchemaRegistryManager::class)]
+#[CoversClass(AvroSubject::class)]
 class SchemaRegistryManagerTest extends TestCase
 {
     private SchemaRegistrySerializer|MockObject $serializer;

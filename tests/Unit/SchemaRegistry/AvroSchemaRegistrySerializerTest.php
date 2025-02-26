@@ -4,14 +4,21 @@ declare(strict_types=1);
 
 namespace Exoticca\KafkaMessenger\Tests\Unit\SchemaRegistry;
 
+use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSchema;
+use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSubject;
+use Exoticca\KafkaMessenger\SchemaRegistry\Avro\FixedBinaryEncoding;
+use Exoticca\KafkaMessenger\SchemaRegistry\Avro\FixedUnionEncoding;
 use Exoticca\KafkaMessenger\SchemaRegistry\AvroSchemaRegistrySerializer;
-use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistrySerializer;
 use Exoticca\KafkaMessenger\Tests\ObjectMother\AvroSchemaMother;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(SchemaRegistrySerializer::class)]
+#[CoversClass(AvroSchemaRegistrySerializer::class)]
+#[CoversClass(AvroSubject::class)]
+#[CoversClass(AvroSchema::class)]
+#[CoversClass(FixedBinaryEncoding::class)]
+#[CoversClass(FixedUnionEncoding::class)]
 class AvroSchemaRegistrySerializerTest extends TestCase
 {
     private AvroSchemaRegistrySerializer $serializer;

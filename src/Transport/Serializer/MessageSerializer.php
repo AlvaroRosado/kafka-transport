@@ -47,7 +47,7 @@ class MessageSerializer implements SerializerInterface
         $identifier = (string)($stamps[KafkaMessageIdentifierStamp::class] ?? null);
 
         if (!$identifier || !isset($this->routingMap[$identifier])) {
-            throw new Exception('Message not found in routing map or KafkaMessageIdentifierStamp missing %s', $identifier);
+            throw new Exception(sprintf('Message not found in routing map or KafkaMessageIdentifierStamp missing %s', $identifier));
         }
 
         $body = $this->serializer->deserialize($encodedEnvelope['body'], $this->routingMap[$identifier], 'json');
@@ -104,7 +104,7 @@ class MessageSerializer implements SerializerInterface
                 continue;
             }
             if (str_starts_with($name, self::customAttributesHeaderKey())) {
-                $stamps += $this->extractCustomHeaders($value, $encodedEnvelope['headers'], $customHeadersStamp);
+                $stamps[KafkaCustomHeadersStamp::class] = $this->extractCustomHeaders($value, $encodedEnvelope['headers'], $customHeadersStamp);
             }
         }
 
@@ -121,15 +121,13 @@ class MessageSerializer implements SerializerInterface
         }
     }
 
-    private function extractCustomHeaders(string $value, array $headers, KafkaCustomHeadersStamp $customHeadersStamp): array
+    private function extractCustomHeaders(string $value, array $headers): KafkaCustomHeadersStamp
     {
-        $stamps = [];
+        $customHeadersStamp = new KafkaCustomHeadersStamp();
         foreach (json_decode($value, true) as $key) {
-            if (isset($headers[$key])) {
-                $stamps[$customHeadersStamp::class] = $customHeadersStamp->withHeader($key, $headers[$key]);
-            }
+            $customHeadersStamp = $customHeadersStamp->withHeader($key, $headers[$key]);
         }
-        return $stamps;
+        return $customHeadersStamp;
     }
 
     private function encodeHeaders(Envelope $envelope): array

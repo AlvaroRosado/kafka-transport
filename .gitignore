@@ -5,6 +5,7 @@ package.xml
 .php_cs.cache
 docs/_build
 composer.lock
+.coverage
 /.phpunit.result.cache
 /var
 /coverage

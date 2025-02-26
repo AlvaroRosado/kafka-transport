@@ -23,7 +23,8 @@ final class KafkaTransportSettingResolver
 
     public function resolve(string $dsn, array $globalOptions, array $transportOptions): GeneralSetting
     {
-        if (false === $parsedUrl = parse_url($dsn)) {
+        $parsedUrl = parse_url($dsn);
+        if (false === $parsedUrl || !isset($parsedUrl['host'], $parsedUrl['port'], $parsedUrl["scheme"])) {
             throw new \InvalidArgumentException(sprintf('The given Kafka DSN "%s" is invalid.', $dsn));
         }
 
@@ -47,11 +48,11 @@ final class KafkaTransportSettingResolver
             !\array_key_exists('consumer', $options)
             && !\array_key_exists('producer', $options)
         ) {
-            throw new LogicException('At least one of "consumer" or "producer" options is required for the %s transport.'. $transportName);
+            throw new \InvalidArgumentException('At least one of "consumer" or "producer" options is required for the %s transport.'. $transportName);
         }
 
         if (!isset($options['identifier']['staticMethod']) || !\is_string($options['identifier']['staticMethod'])) {
-            throw new LogicException(sprintf('The "staticMethodIdentifier" option type must be string, "%s" %s', \gettype($options['identifier']['staticMethod']), $transportName));
+            throw new \InvalidArgumentException(sprintf('The "staticMethodIdentifier" option type must be string, "%s" %s', \gettype($options['identifier']['staticMethod']), $transportName));
         }
 
         $configValidator = new SettingManager();
@@ -59,7 +60,7 @@ final class KafkaTransportSettingResolver
         $producerOptions = $configValidator->setupProducerOptions($options, sprintf(" given in the producer option of transport %s", $transportName));
 
         if (empty($consumerOptions['topics']) && empty($producerOptions['topics']) && empty($options['topics'])) {
-            throw new LogicException(sprintf('At least one of "consumer.topics", "producer.topics" or "topics" options is required for the %s transport.', $transportName));
+            throw new \InvalidArgumentException(sprintf('At least one of "consumer.topics", "producer.topics" or "topics" options is required for the %s transport.', $transportName));
         }
 
         $topics = $options['topics'] ?? null;

@@ -6,6 +6,7 @@ namespace Exoticca\KafkaMessenger\Tests\Unit\SchemaRegistry;
 
 use Avro\SchemaRegistry\ClientError;
 use Avro\SchemaRegistry\Model\Error;
+use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSchema;
 use Exoticca\KafkaMessenger\SchemaRegistry\Avro\AvroSubject;
 use Exoticca\KafkaMessenger\SchemaRegistry\SchemaRegistryHttpClient;
 use Exoticca\KafkaMessenger\Tests\ObjectMother\AvroSchemaMother;
@@ -15,6 +16,8 @@ use Symfony\Component\HttpClient\MockHttpClient;
 use Symfony\Component\HttpClient\Response\MockResponse;
 
 #[CoversClass(SchemaRegistryHttpClient::class)]
+#[CoversClass(AvroSubject::class)]
+#[CoversClass(AvroSchema::class)]
 class SchemaRegistryHttpClientTest extends TestCase
 {
     private array $credentials;
