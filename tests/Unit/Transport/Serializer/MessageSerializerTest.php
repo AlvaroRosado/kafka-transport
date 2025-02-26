@@ -10,10 +10,8 @@ use Exoticca\KafkaMessenger\Transport\Stamp\KafkaMessageIdentifierStamp;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Messenger\Envelope;
-use Symfony\Component\Messenger\Exception\MessageDecodingFailedException;
 use Symfony\Component\Messenger\Stamp\DelayStamp;
 use Symfony\Component\Messenger\Stamp\SerializedMessageStamp;
-use Symfony\Component\Messenger\Transport\Serialization\PhpSerializer;
 
 #[CoversClass(MessageSerializer::class)]
 #[CoversClass(KafkaMessageIdentifierStamp::class)]
