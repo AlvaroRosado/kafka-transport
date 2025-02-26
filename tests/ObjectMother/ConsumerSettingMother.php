@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-
 namespace Exoticca\KafkaMessenger\Tests\ObjectMother;
 
 use Exoticca\KafkaMessenger\Transport\Setting\ConsumerSetting;

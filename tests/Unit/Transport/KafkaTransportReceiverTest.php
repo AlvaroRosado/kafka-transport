@@ -98,7 +98,7 @@ final class KafkaTransportReceiverTest extends TestCase
 
         $this->serializer->expects($this->once())
             ->method('decode')
-            ->with($this->callback(function($arg) use ($decodedData) {
+            ->with($this->callback(function ($arg) use ($decodedData) {
                 return isset($arg['body']) &&
                     isset($arg['headers']) &&
                     $arg['headers'] === ['header1' => 'value1'];

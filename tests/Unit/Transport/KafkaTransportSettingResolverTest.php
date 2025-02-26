@@ -99,7 +99,7 @@ final class KafkaTransportSettingResolverTest extends TestCase
             'identifier' => ['staticMethod' => 'getType'],
             'topics' => ['test-topic'],
             'validate_schema' => true,
-            'consumer' =>[
+            'consumer' => [
                 'config' => ['group.id' => 'test-group'],
                 'routing' => [
                     ['name' => 'message', 'class' => TestMessage::class],

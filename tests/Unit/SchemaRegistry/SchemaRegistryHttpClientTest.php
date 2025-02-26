@@ -111,12 +111,13 @@ class SchemaRegistryHttpClientTest extends TestCase
         $client->getSchema(100091);
     }
 
-    private function registryWithCustomResponse(MockResponse $response): SchemaRegistryHttpClient {
+    private function registryWithCustomResponse(MockResponse $response): SchemaRegistryHttpClient
+    {
         return new SchemaRegistryHttpClient(
             'http://schema-registry.local',
             'test_key',
-            'test_secret'
-            , new MockHttpClient($response)
+            'test_secret',
+            new MockHttpClient($response)
         );
     }
 }
